@@ -23,6 +23,7 @@ The task is episodic, and in order to solve the environment, the agents must get
     * Linux: click [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P3/Tennis/Tennis_Linux.zip)
     * Mac OSX: click [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P3/Tennis/Tennis.app.zip)
     * Windows (64-bit): click [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P3/Tennis/Tennis_Windows_x86_64.zip)
+    
     Then, place the file in the `drl_collab_compet/` folder of this GitHub repository, and unzip the file.
 
 ## Instructions
