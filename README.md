@@ -28,5 +28,44 @@ The task is episodic, and in order to solve the environment, the agents must get
 
 ## Instructions
 ### Configuration File
+To run the main program you have to create a configuration file called `*.ini` where you can set all important parameters (e.g, the networks architectures, learning Adam algorithms, replay memory, and others). The repository has an example file `params_example.ini` that you can copy and rename. Here is an example of a configuration file,
+
+    ```python
+    [DEFAULT]
+    # max. number of episode to train the agent
+    n_episodes:       100
+    # max. number of steps per episode
+    max_t:           1000
+    # save the last XXX returns of the agent
+    print_every:        1
+    # replay buffer size
+    SEED:               0
+    # replay buffer size
+    BUFFER_SIZE:      1e5
+    # minibatch size
+    BATCH_SIZE:       256
+    # how often to update the network
+    UPDATE_EVERY:       1
+    # discount factor
+    GAMMA:           0.99
+    # std noise over actions for exploration
+    SIGMA:           0.20
+    # for soft update or target parameters
+    TAU:             1e-3
+    # learning rate of the actor
+    LR_ACTOR:        1e-4
+    # learning rate of the critic
+    LR_CRITIC:       1e-4
+    # L2 weight decay
+    WEIGHT_DECAY:       0
+    # number of neurons in actor first layer
+    FC1_ACTOR:        400
+    # number of neurons in actor second layer
+    FC2_ACTOR:        300
+    # number of neurons in critic first layer
+    FC1_CRITIC:       400
+    # number of neurons in critic second layer
+    FC2_CRITIC:       300
+    ```
 
 ### How to run the code
