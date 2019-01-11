@@ -12,6 +12,18 @@ The task is episodic, and in order to solve the environment, the agents must get
 
 ## Getting Started
 ### Dependencies and Installation
+1. Clone this repo `git clone https://github.com/jacastillol/drl_collab_compet.git drl_collab_compet`
+1. Create conda environment and install dependencies:
+    ```bash
+    conda crate --name drlcontinuous python=3.6
+    source activate drlcollabcompet
+    pip install unityagents torch torchsummary
+    ```
+1. Download and intall Unity environment
+    * Linux: click [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P3/Tennis/Tennis_Linux.zip)
+    * Mac OSX: click [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P3/Tennis/Tennis.app.zip)
+    * Windows (64-bit): click [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P3/Tennis/Tennis_Windows_x86_64.zip)
+    Then, place the file in the `drl_collab_compet/` folder of this GitHub repository, and unzip the file.
 
 ## Instructions
 ### Configuration File
