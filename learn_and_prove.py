@@ -1,5 +1,7 @@
 import argparse
 import configparser
+from ddpg_interaction import info, reset, step, ddpg
+from ddpg_agent import Agent
 
 # parse input arguments
 parser = argparse.ArgumentParser()
@@ -41,3 +43,26 @@ if args.file==None:
     filename='checkpoint'
 else:
     filename=args.file
+
+#create environment
+env = UnityEnvironment(file_name='Tennis/Tennis.x86_64', seed=config['SEED'])
+# get info of the environment
+num_agents, state_size, action_size = info(env)
+
+# create an agent
+agent = Agent(num_agents=num_agents, state_size=state_size, action_size=action_size,
+              random_seed=config['SEED'],
+              gamma=config['GAMMA'],
+              sigma=config['SIGMA'],
+              tau=config['TAU'],
+              lr_actor=config['LR_ACTOR'],
+              lr_critic=config['LR_CRITIC'],
+              weight_decay=config['WEIGHT_DECAY'],
+              fc1_a=config['FC1_ACTOR'],
+              fc2_a=config['FC2_ACTOR'],
+              fc1_c=config['FC1_CRITIC'],
+              fc2_c=config['FC2_CRITIC'],
+              buffer_size=config['BUFFER_SIZE'],
+              batch_size=config['BATCH_SIZE'],
+              update_every=config['UPDATE_EVERY'])
+
