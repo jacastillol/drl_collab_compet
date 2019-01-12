@@ -9,6 +9,8 @@ parser.add_argument('config', type=str,
                     help='Specify the input config filename')
 parser.add_argument('--file', type=str,
                     help='Specify the input-output weights filename')
+parser.add_argument('--train', action='store_true',
+                    help='run a pre-trainded neural network agent')
 args = parser.parse_args()
 
 # read configuration file
