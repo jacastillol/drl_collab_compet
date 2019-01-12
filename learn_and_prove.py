@@ -1,3 +1,4 @@
+import numpy as np
 import argparse
 import configparser
 from ddpg_interaction import info, reset, step, ddpg
