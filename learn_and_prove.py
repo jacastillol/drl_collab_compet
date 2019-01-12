@@ -66,3 +66,12 @@ agent = Agent(num_agents=num_agents, state_size=state_size, action_size=action_s
               batch_size=config['BATCH_SIZE'],
               update_every=config['UPDATE_EVERY'])
 
+# learn or prove
+if args.train:
+    scores, scores_avg = ddpg(env, agent,
+                              n_episodes=config['n_episodes'],
+                              max_t=config['max_t'],
+                              print_every=config['print_every'],
+                              filename=filename)
+    # save training curves
+    np.savez(filename+'.npz', scores=scores, scores_avg=scores_avg, config=config)
