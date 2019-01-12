@@ -5,6 +5,8 @@ import configparser
 parser = argparse.ArgumentParser()
 parser.add_argument('config', type=str,
                     help='Specify the input config filename')
+parser.add_argument('--file', type=str,
+                    help='Specify the input-output weights filename')
 args = parser.parse_args()
 
 # read configuration file
@@ -33,3 +35,9 @@ config = {
 print(' Config Parameters')
 for k,v in config.items():
     print('{:<15}: {:>15}'.format(k,v))
+
+# setting filename
+if args.file==None:
+    filename='checkpoint'
+else:
+    filename=args.file
