@@ -53,3 +53,58 @@ def step(env, actions):
     rewards = env_info.rewards
     dones = env_info.local_done
     return next_states, rewards, dones
+
+def ddpg(env, agent, n_episodes=300, max_t=700, print_every=10, filename='checkpoint'):
+    """ Deep Deterministic Policy Gradient algorithm
+    Params:
+    =======
+    """
+    first_time=True
+    scores_deque = deque(maxlen=100)
+    scores_avg = deque(maxlen=n_episodes)
+    scores = []
+    max_score = -np.Inf
+    # init timer
+    tic = time.clock()
+    # for each episode
+    for i_episode in range(1, n_episodes+1):
+        states = reset(env, train_mode=True)
+        agent.reset()
+        score = np.zeros(agent.num_agents)
+        for t in range(max_t):
+            actions = agent.act(states)
+            next_states, rewards, dones = step(env, actions)
+            agent.step(states, actions, rewards, next_states, dones)
+            states = next_states
+            score += rewards
+            if np.any(dones):
+                break
+        score = np.mean(score)
+        scores_deque.append(score)
+        scores.append(score)
+        # geting averages
+        # append to average
+        curr_avg_score = np.mean(scores_deque)
+        scores_avg.append(curr_avg_score)
+        # update best average reward
+        if curr_avg_score > max_score:
+            max_score = curr_avg_score
+        # monitor progress
+        message = "\rEpisode {:>4}/{:>4} || Score {:.5f} || Last avg. scores {:.5f} || Best avg. score {:.5f} "
+        if i_episode % print_every == 0:
+            print(message.format(i_episode, n_episodes, score, curr_avg_score, max_score))
+        else:
+            print(message.format(i_episode, n_episodes, score, curr_avg_score, max_score), end="")
+        # stopping criteria
+        if curr_avg_score>=0.5:
+            # save solved weights for
+            torch.save(agent.actor_local.state_dict(), filename+'_solved.actor.pth')
+            torch.save(agent.critic_local.state_dict(), filename+'_solved.critic.pth')
+            print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}\tin {:.2f} secs'.
+                  format(i_episode, curr_avg_score, time.clock()-tic))
+            break
+    # save final weights
+    torch.save(agent.actor_local.state_dict(), filename+'.actor.pth')
+    torch.save(agent.critic_local.state_dict(), filename+'.critic.pth')
+
+    return scores, scores_avg
