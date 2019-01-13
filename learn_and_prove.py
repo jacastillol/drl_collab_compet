@@ -3,6 +3,7 @@ import argparse
 import configparser
 from ddpg_interaction import info, reset, step, ddpg
 from ddpg_agent import Agent
+from unityagents import UnityEnvironment
 
 # parse input arguments
 parser = argparse.ArgumentParser()
@@ -18,27 +19,34 @@ args = parser.parse_args()
 configParser = configparser.ConfigParser()
 configParser.read(args.config)
 config = {
-    'n_episodes':    int(configParser['DEFAULT']['n_episodes']),
-    'max_t':         int(configParser['DEFAULT']['max_t']),
-    'print_every':   int(configParser['DEFAULT']['print_every']),
-    'SEED':          int(configParser['DEFAULT']['SEED']),
-    'BUFFER_SIZE':   int(float(configParser['DEFAULT']['BUFFER_SIZE'])),
-    'BATCH_SIZE':    int(configParser['DEFAULT']['BATCH_SIZE']),
-    'UPDATE_EVERY':  int(configParser['DEFAULT']['UPDATE_EVERY']),
-    'GAMMA':         float(configParser['DEFAULT']['GAMMA']),
-    'SIGMA':         float(configParser['DEFAULT']['SIGMA']),
-    'TAU':           float(configParser['DEFAULT']['TAU']),
-    'LR_ACTOR':      float(configParser['DEFAULT']['LR_ACTOR']),
-    'LR_CRITIC':     float(configParser['DEFAULT']['LR_CRITIC']),
-    'WEIGHT_DECAY':  float(configParser['DEFAULT']['WEIGHT_DECAY']),
-    'FC1_ACTOR':     int(configParser['DEFAULT']['FC1_ACTOR']),
-    'FC2_ACTOR':     int(configParser['DEFAULT']['FC2_ACTOR']),
-    'FC1_CRITIC':    int(configParser['DEFAULT']['FC1_CRITIC']),
-    'FC2_CRITIC':    int(configParser['DEFAULT']['FC2_CRITIC']),
+    'n_episodes':    int(configParser['PARAMS']['n_episodes']),
+    'max_t':         int(configParser['PARAMS']['max_t']),
+    'print_every':   int(configParser['PARAMS']['print_every']),
+    'SEED':          int(configParser['PARAMS']['SEED']),
+    'BUFFER_SIZE':   int(float(configParser['PARAMS']['BUFFER_SIZE'])),
+    'BATCH_SIZE':    int(configParser['PARAMS']['BATCH_SIZE']),
+    'UPDATE_EVERY':  int(configParser['PARAMS']['UPDATE_EVERY']),
+    'GAMMA':         float(configParser['PARAMS']['GAMMA']),
+    'SIGMA':         float(configParser['PARAMS']['SIGMA']),
+    'TAU':           float(configParser['PARAMS']['TAU']),
+    'LR_ACTOR':      float(configParser['PARAMS']['LR_ACTOR']),
+    'LR_CRITIC':     float(configParser['PARAMS']['LR_CRITIC']),
+    'WEIGHT_DECAY':  float(configParser['PARAMS']['WEIGHT_DECAY']),
+    'FC1_ACTOR':     int(configParser['PARAMS']['FC1_ACTOR']),
+    'FC2_ACTOR':     int(configParser['PARAMS']['FC2_ACTOR']),
+    'FC1_CRITIC':    int(configParser['PARAMS']['FC1_CRITIC']),
+    'FC2_CRITIC':    int(configParser['PARAMS']['FC2_CRITIC']),
 }
-# print configuration
-print(' Config Parameters')
+filenames = {
+    'game_file':     configParser['FILES']['game_file'],
+}
+# config configuration
+print(' **** Config Parameters')
 for k,v in config.items():
+    print('{:<15}: {:>15}'.format(k,v))
+# files configuration
+print(' **** File names')
+for k,v in filenames.items():
     print('{:<15}: {:>15}'.format(k,v))
 
 # setting filename
@@ -48,12 +56,27 @@ else:
     filename=args.file
 
 #create environment
-env = UnityEnvironment(file_name='Tennis/Tennis.x86_64', seed=config['SEED'])
+env = UnityEnvironment(file_name=filenames['game_file'], seed=config['SEED'])
 # get info of the environment
 num_agents, state_size, action_size = info(env)
 
 # create an agent
-agent = Agent(num_agents=num_agents, state_size=state_size, action_size=action_size,
+agent0 = Agent(num_agents=1, state_size=state_size, action_size=action_size,
+              random_seed=config['SEED'],
+              gamma=config['GAMMA'],
+              sigma=config['SIGMA'],
+              tau=config['TAU'],
+              lr_actor=config['LR_ACTOR'],
+              lr_critic=config['LR_CRITIC'],
+              weight_decay=config['WEIGHT_DECAY'],
+              fc1_a=config['FC1_ACTOR'],
+              fc2_a=config['FC2_ACTOR'],
+              fc1_c=config['FC1_CRITIC'],
+              fc2_c=config['FC2_CRITIC'],
+              buffer_size=config['BUFFER_SIZE'],
+              batch_size=config['BATCH_SIZE'],
+              update_every=config['UPDATE_EVERY'])
+agent1 = Agent(num_agents=1, state_size=state_size, action_size=action_size,
               random_seed=config['SEED'],
               gamma=config['GAMMA'],
               sigma=config['SIGMA'],
