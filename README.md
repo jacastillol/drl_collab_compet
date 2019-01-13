@@ -31,19 +31,19 @@ The task is episodic, and in order to solve the environment, the agents must get
 To run the main program you have to create a configuration file called `*.ini` where you can set all important parameters (e.g, the networks architectures, learning Adam algorithms, replay memory, and others). The repository has an example file `params_example.ini` that you can copy and rename. Here is an example of a configuration file,
 
     ```python
-    [DEFAULT]
+    [PARAMS]
     # max. number of episode to train the agent
-    n_episodes:       100
+    n_episodes:      2000
     # max. number of steps per episode
     max_t:           1000
     # save the last XXX returns of the agent
-    print_every:        1
+    print_every:       50
     # replay buffer size
     SEED:               0
     # replay buffer size
     BUFFER_SIZE:      1e5
     # minibatch size
-    BATCH_SIZE:       256
+    BATCH_SIZE:       128
     # how often to update the network
     UPDATE_EVERY:       1
     # discount factor
@@ -51,11 +51,11 @@ To run the main program you have to create a configuration file called `*.ini` w
     # std noise over actions for exploration
     SIGMA:           0.20
     # for soft update or target parameters
-    TAU:             1e-3
+    TAU:             6e-2
     # learning rate of the actor
     LR_ACTOR:        1e-4
     # learning rate of the critic
-    LR_CRITIC:       1e-4
+    LR_CRITIC:       1e-3
     # L2 weight decay
     WEIGHT_DECAY:       0
     # number of neurons in actor first layer
@@ -66,6 +66,27 @@ To run the main program you have to create a configuration file called `*.ini` w
     FC1_CRITIC:       400
     # number of neurons in critic second layer
     FC2_CRITIC:       300
+    [FILES]
+    # executable Tenis game. Add path and file
+    game_file:       Tennis_Linux/Tennis.x86_64
     ```
 
 ### How to run the code
+
+1. Create a config file. One way could be cp params_example.ini params.ini and then modify the parameters as you want
+
+1. Remember to activate the environment with source activate drlnavigation
+
+1. To train a new agent:
+
+    ```bash
+    python learn_and_prove.py params.ini --train
+    ```
+
+    This will produce three files under the namespace checkpoint: checkpoint.actor.pth and checkpoint.critic.pth holding the weights of the final Actor and Critic networks. The third file checkpoint.npz contains information about the configuration run and learning curves. To change the default namespace use the option --file NAMESPACE.
+
+1. To watch again the performance of the agent trained in the last step run again:
+
+    ```bash
+    python learn_and_prove.py [--file NAMESPACE]
+    ```
