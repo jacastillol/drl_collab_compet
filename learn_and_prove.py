@@ -4,6 +4,7 @@ import configparser
 from ddpg_interaction import info, reset, step, maddpg
 from ddpg_agent import Agent
 from unityagents import UnityEnvironment
+import torch
 
 # parse input arguments
 parser = argparse.ArgumentParser()
@@ -14,6 +15,8 @@ parser.add_argument('--file', type=str,
 parser.add_argument('--train', action='store_true',
                     help='run a pre-trainded neural network agent')
 parser.add_argument('--random', action='store_true',
+                    help='run a tabula rasa agent')
+parser.add_argument('--no-graph', action='store_true',
                     help='run a tabula rasa agent')
 args = parser.parse_args()
 
@@ -108,8 +111,30 @@ elif args.random:
     print('Run a Tabula Rasa or random agent')
 else:
     # load the weights from file
-    agent.actor_local.load_state_dict(torch.load(filename+'.actor.pth'))
-    agent.actor_target.load_state_dict(torch.load(filename+'.actor.pth'))
-    agent.critic_local.load_state_dict(torch.load(filename+'.critic.pth'))
-    agent.critic_target.load_state_dict(torch.load(filename+'.critic.pth'))
+    agents[0].actor_local.load_state_dict(torch.load(filename+'.actor0.pth'))
+    agents[0].actor_target.load_state_dict(torch.load(filename+'.actor0.pth'))
+    agents[1].critic_local.load_state_dict(torch.load(filename+'.critic1.pth'))
+    agents[1].critic_target.load_state_dict(torch.load(filename+'.critic1.pth'))
     print('Loaded {}:'.format(filename))
+
+# run a random controller through arms
+if args.no_graph:
+    print('no proves on controller')
+else:
+    for i in range(5):
+        scores = np.zeros(len(agents))
+        states = reset(env, train_mode=False)
+        # check performance of the agent
+        #for j in range(1000):
+        while True:
+            action0 = agents[0].act(states, add_noise=False)
+            action1 = agents[1].act(states, add_noise=False)
+            actions = np.reshape(np.concatenate((action0,action1),axis=0),(1,4))
+            next_states, rewards, dones = step(env, actions)
+            states =  next_states
+            scores += rewards
+            if np.any(dones):
+                break
+        print('Total score (averaged over agents) this episode: {}'.
+              format(np.max(scores)))
+env.close()
