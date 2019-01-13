@@ -61,7 +61,7 @@ env = UnityEnvironment(file_name=filenames['game_file'], seed=config['SEED'])
 num_agents, state_size, action_size = info(env)
 
 # create two independent agents
-agent = [ Agent(num_agents=1, state_size=state_size, action_size=action_size,
+agents = [ Agent(num_agents=1, state_size=state_size, action_size=action_size,
                  random_seed=config['SEED'],
                  gamma=config['GAMMA'],
                  sigma=config['SIGMA'],
@@ -94,10 +94,10 @@ agent = [ Agent(num_agents=1, state_size=state_size, action_size=action_size,
 
 # learn or prove
 if args.train:
-    scores, scores_avg = ddpg(env, agent,
-                              n_episodes=config['n_episodes'],
-                              max_t=config['max_t'],
-                              print_every=config['print_every'],
-                              filename=filename)
+    scores, scores_avg = maddpg(env, agents,
+                                n_episodes=config['n_episodes'],
+                                max_t=config['max_t'],
+                                print_every=config['print_every'],
+                                filename=filename)
     # save training curves
     np.savez(filename+'.npz', scores=scores, scores_avg=scores_avg, config=config)

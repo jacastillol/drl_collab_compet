@@ -76,7 +76,7 @@ class Agent:
             action += self.noise.sample()
         return np.clip(action, -1, 1)
 
-    def step(self, state, action, reward, next_state, done):
+    def step(self, state, action, reward, next_state, done, id_agent):
         # Save experience / reward
         for i in range(self.num_agents):
             self.memory.add(state[i, :], action[i, :], reward[i], next_state[i, :], done[i])
@@ -85,14 +85,19 @@ class Agent:
             # Learn, if enough samples are available in memory
             if len(self.memory) > self.batch_size:
                 experiences = self.memory.sample()
-                self.learn(experiences)
+                self.learn(experiences, id_agent)
 
-    def learn(self, experiences):
+    def learn(self, experiences, id_agent):
         states, actions, rewards, next_states, dones = experiences
 
         # ---------------------------- update critic ---------------------------- #
         # Get predicted next-state actions and Q values from target models
         actions_next = self.actor_target(next_states)
+        if agent_number == 0:
+            actions_next = torch.cat((actions_next, actions[:,2:]), dim=1)
+        else:
+            actions_next = torch.cat((actions[:,:2], actions_next), dim=1)
+
         Q_targets_next = self.critic_target(next_states, actions_next)
         # Compute Q targets for current states (y_i)
         Q_targets = rewards + (self.gamma * Q_targets_next * (1 - dones))
@@ -108,6 +113,11 @@ class Agent:
         # ---------------------------- update actor ---------------------------- #
         # Compute actor loss
         actions_pred = self.actor_local(states)
+        if agent_number == 0:
+            actions_pred = torch.cat((actions_pred, actions[:,2:]), dim=1)
+        else:
+            actions_pred = torch.cat((actions[:,:2], actions_pred), dim=1)
+
         actor_loss = -self.critic_local(states, actions_pred).mean()
         # Minimize the loss
         self.actor_optimizer.zero_grad()

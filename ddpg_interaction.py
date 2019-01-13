@@ -49,12 +49,12 @@ def step(env, actions):
     # perform the step
     env_info = env.step(actions)[brain_name]
     # get result from taken action
-    next_states = env_info.vector_observations
+    next_states = np.reshape(env_info.vector_observations,(1,48))
     rewards = env_info.rewards
     dones = env_info.local_done
     return next_states, rewards, dones
 
-def maddpg(env, agent, n_episodes=300, max_t=700, print_every=10, filename='checkpoint'):
+def maddpg(env, agents, n_episodes=300, max_t=700, print_every=10, filename='checkpoint'):
     """ Deep Deterministic Policy Gradient algorithm
     Params:
     =======
@@ -69,17 +69,21 @@ def maddpg(env, agent, n_episodes=300, max_t=700, print_every=10, filename='chec
     # for each episode
     for i_episode in range(1, n_episodes+1):
         states = reset(env, train_mode=True)
-        agent.reset()
-        score = np.zeros(agent.num_agents)
+        agents[0].reset()
+        agents[1].reset()
+        score = np.zeros(len(agents))
         for t in range(max_t):
-            actions = agent.act(states)
+            action0 = agent[0].act(states)
+            action1 = agent[1].act(states)
+            actions = np.reshape(np.concatenate((action0,action1),axis=0),(1,4))
             next_states, rewards, dones = step(env, actions)
-            agent.step(states, actions, rewards, next_states, dones)
+            agent[0].step(states, actions, rewards[0], next_states, dones, 0)
+            agent[1].step(states, actions, rewards[1], next_states, dones, 1)
             states = next_states
             score += rewards
             if np.any(dones):
                 break
-        score = np.mean(score)
+        score = np.max(score)
         scores_deque.append(score)
         scores.append(score)
         # geting averages
@@ -98,13 +102,17 @@ def maddpg(env, agent, n_episodes=300, max_t=700, print_every=10, filename='chec
         # stopping criteria
         if curr_avg_score>=0.5:
             # save solved weights for
-            torch.save(agent.actor_local.state_dict(), filename+'_solved.actor.pth')
-            torch.save(agent.critic_local.state_dict(), filename+'_solved.critic.pth')
+            torch.save(agent[0].actor_local.state_dict(), filename+'_solved.actor0.pth')
+            torch.save(agent[0].critic_local.state_dict(), filename+'_solved.critic0.pth')
+            torch.save(agent[1].actor_local.state_dict(), filename+'_solved.actor1.pth')
+            torch.save(agent[1].critic_local.state_dict(), filename+'_solved.critic1.pth')
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}\tin {:.2f} secs'.
                   format(i_episode, curr_avg_score, time.clock()-tic))
             break
     # save final weights
-    torch.save(agent.actor_local.state_dict(), filename+'.actor.pth')
-    torch.save(agent.critic_local.state_dict(), filename+'.critic.pth')
+    torch.save(agent[0].actor_local.state_dict(), filename+'.actor0.pth')
+    torch.save(agent[0].critic_local.state_dict(), filename+'.critic0.pth')
+    torch.save(agent[1].actor_local.state_dict(), filename+'.actor1.pth')
+    torch.save(agent[1].critic_local.state_dict(), filename+'.critic1.pth')
 
     return scores, scores_avg
