@@ -28,9 +28,11 @@ The task is episodic, and in order to solve the environment, the agents must get
 
 ## Instructions
 ### Configuration File
-To run the main program you have to create a configuration file called `*.ini` where you can set all important parameters (e.g, the networks architectures, learning Adam algorithms, replay memory, and others). The repository has an example file `params_example.ini` that you can copy and rename. Here is an example of a configuration file,
+To run the main program you have to create a configuration file called `*.ini` where you can set all important parameters (e.g, the networks architectures, learning Adam algorithms, replay memory, and others). The repository has an example file `params_example.ini` that you can copy and rename.
 
-    ```python
+Configuration files has two important field, `PARAMS` where you configure all the parameters and `FILES` where you have to set the path to the Unity application game. Here is an example of a configuration file in Linux,
+
+    ```
     [PARAMS]
     # max. number of episode to train the agent
     n_episodes:      2000
