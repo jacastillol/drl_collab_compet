@@ -110,7 +110,7 @@ def maddpg(env, agents, n_episodes=300, max_t=700, print_every=10, filename='che
             torch.save(agents[1].critic_local.state_dict(), filename+'_solved.critic1.pth')
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}\tin {:.2f} secs'.
                   format(i_episode, curr_avg_score, time.clock()-tic))
-            # break
+            break
     # save final weights
     torch.save(agents[0].actor_local.state_dict(), filename+'.actor0.pth')
     torch.save(agents[0].critic_local.state_dict(), filename+'.critic0.pth')
