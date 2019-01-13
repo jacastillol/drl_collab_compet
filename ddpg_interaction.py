@@ -35,6 +35,7 @@ def reset(env,train_mode=True):
     env_info = env.reset(train_mode=train_mode)[brain_name]
     # get state
     states = env_info.vector_observations
+    states = np.reshape(states, (1,48))
     return states
 
 def step(env, actions):
@@ -72,13 +73,14 @@ def maddpg(env, agents, n_episodes=300, max_t=700, print_every=10, filename='che
         agents[0].reset()
         agents[1].reset()
         score = np.zeros(len(agents))
-        for t in range(max_t):
-            action0 = agent[0].act(states)
-            action1 = agent[1].act(states)
+        # for t in range(max_t):
+        while True:
+            action0 = agents[0].act(states)
+            action1 = agents[1].act(states)
             actions = np.reshape(np.concatenate((action0,action1),axis=0),(1,4))
             next_states, rewards, dones = step(env, actions)
-            agent[0].step(states, actions, rewards[0], next_states, dones, 0)
-            agent[1].step(states, actions, rewards[1], next_states, dones, 1)
+            agents[0].step(states, actions, rewards[0], next_states, dones, 0)
+            agents[1].step(states, actions, rewards[1], next_states, dones, 1)
             states = next_states
             score += rewards
             if np.any(dones):
@@ -102,17 +104,17 @@ def maddpg(env, agents, n_episodes=300, max_t=700, print_every=10, filename='che
         # stopping criteria
         if curr_avg_score>=0.5:
             # save solved weights for
-            torch.save(agent[0].actor_local.state_dict(), filename+'_solved.actor0.pth')
-            torch.save(agent[0].critic_local.state_dict(), filename+'_solved.critic0.pth')
-            torch.save(agent[1].actor_local.state_dict(), filename+'_solved.actor1.pth')
-            torch.save(agent[1].critic_local.state_dict(), filename+'_solved.critic1.pth')
+            torch.save(agents[0].actor_local.state_dict(), filename+'_solved.actor0.pth')
+            torch.save(agents[0].critic_local.state_dict(), filename+'_solved.critic0.pth')
+            torch.save(agents[1].actor_local.state_dict(), filename+'_solved.actor1.pth')
+            torch.save(agents[1].critic_local.state_dict(), filename+'_solved.critic1.pth')
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}\tin {:.2f} secs'.
                   format(i_episode, curr_avg_score, time.clock()-tic))
             break
     # save final weights
-    torch.save(agent[0].actor_local.state_dict(), filename+'.actor0.pth')
-    torch.save(agent[0].critic_local.state_dict(), filename+'.critic0.pth')
-    torch.save(agent[1].actor_local.state_dict(), filename+'.actor1.pth')
-    torch.save(agent[1].critic_local.state_dict(), filename+'.critic1.pth')
+    torch.save(agents[0].actor_local.state_dict(), filename+'.actor0.pth')
+    torch.save(agents[0].critic_local.state_dict(), filename+'.critic0.pth')
+    torch.save(agents[1].actor_local.state_dict(), filename+'.actor1.pth')
+    torch.save(agents[1].critic_local.state_dict(), filename+'.critic1.pth')
 
     return scores, scores_avg
