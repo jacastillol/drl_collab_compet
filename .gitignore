@@ -1,0 +1,6 @@
+# directories
+.ipynb_checkpoints/
+Tennis_Linux/
+__pycache__/
+# files
+unity-environment.log
