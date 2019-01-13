@@ -54,7 +54,7 @@ def step(env, actions):
     dones = env_info.local_done
     return next_states, rewards, dones
 
-def ddpg(env, agent, n_episodes=300, max_t=700, print_every=10, filename='checkpoint'):
+def maddpg(env, agent, n_episodes=300, max_t=700, print_every=10, filename='checkpoint'):
     """ Deep Deterministic Policy Gradient algorithm
     Params:
     =======
