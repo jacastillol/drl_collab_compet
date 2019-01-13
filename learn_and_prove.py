@@ -1,7 +1,7 @@
 import numpy as np
 import argparse
 import configparser
-from ddpg_interaction import info, reset, step, ddpg
+from ddpg_interaction import info, reset, step, maddpg
 from ddpg_agent import Agent
 from unityagents import UnityEnvironment
 
