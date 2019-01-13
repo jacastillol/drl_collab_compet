@@ -13,6 +13,8 @@ parser.add_argument('--file', type=str,
                     help='Specify the input-output weights filename')
 parser.add_argument('--train', action='store_true',
                     help='run a pre-trainded neural network agent')
+parser.add_argument('--random', action='store_true',
+                    help='run a tabula rasa agent')
 args = parser.parse_args()
 
 # read configuration file
@@ -101,3 +103,13 @@ if args.train:
                                 filename=filename)
     # save training curves
     np.savez(filename+'.npz', scores=scores, scores_avg=scores_avg, config=config)
+elif args.random:
+    # choose random policy
+    print('Run a Tabula Rasa or random agent')
+else:
+    # load the weights from file
+    agent.actor_local.load_state_dict(torch.load(filename+'.actor.pth'))
+    agent.actor_target.load_state_dict(torch.load(filename+'.actor.pth'))
+    agent.critic_local.load_state_dict(torch.load(filename+'.critic.pth'))
+    agent.critic_target.load_state_dict(torch.load(filename+'.critic.pth'))
+    print('Loaded {}:'.format(filename))
