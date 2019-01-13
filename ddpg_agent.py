@@ -57,9 +57,9 @@ class Agent:
         self.t_step = 0
         # print networks info
         print(self.actor_local)
-        summary(self.actor_local, input_size=(state_size,))
+        summary(self.actor_local, input_size=(2*state_size,))
         print(self.critic_local)
-        summary(self.critic_local, input_size=[(state_size,), (action_size,)])
+        summary(self.critic_local, input_size=[(2*state_size,), (2*action_size,)])
 
     def reset(self):
         self.noise.reset()
@@ -78,8 +78,7 @@ class Agent:
 
     def step(self, state, action, reward, next_state, done, id_agent):
         # Save experience / reward
-        for i in range(self.num_agents):
-            self.memory.add(state[i, :], action[i, :], reward[i], next_state[i, :], done[i])
+        self.memory.add(state, action, reward, next_state, done)
         self.t_step = (self.t_step + 1) % self.update_every
         if self.t_step == 0:
             # Learn, if enough samples are available in memory
@@ -93,7 +92,7 @@ class Agent:
         # ---------------------------- update critic ---------------------------- #
         # Get predicted next-state actions and Q values from target models
         actions_next = self.actor_target(next_states)
-        if agent_number == 0:
+        if id_agent == 0:
             actions_next = torch.cat((actions_next, actions[:,2:]), dim=1)
         else:
             actions_next = torch.cat((actions[:,:2], actions_next), dim=1)
@@ -113,7 +112,7 @@ class Agent:
         # ---------------------------- update actor ---------------------------- #
         # Compute actor loss
         actions_pred = self.actor_local(states)
-        if agent_number == 0:
+        if id_agent == 0:
             actions_pred = torch.cat((actions_pred, actions[:,2:]), dim=1)
         else:
             actions_pred = torch.cat((actions[:,:2], actions_pred), dim=1)
