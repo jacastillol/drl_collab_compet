@@ -46,7 +46,10 @@ class Agent:
                                    fcs1_units=fc1_c, fc2_units=fc2_c).to(device)
         self.critic_optimizer = optim.Adam(self.critic_local.parameters(),
                                            lr=lr_critic, weight_decay=weight_decay)
-         # Replay memory
+        # Initial copy from local to target
+        self.hard_update(self.actor_target, self.actor_local)
+        self.hard_update(self.critic_target, self.critic_local)
+        # Replay memory
         self.memory = ReplayBuffer(action_size, buffer_size, batch_size, random_seed)
         # Noise process
         self.noise = OUNoise((num_agents, action_size), random_seed, sigma=sigma)
@@ -126,6 +129,10 @@ class Agent:
         """
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
+
+    def hard_update(self, target, source):
+        for target_param, source_param in zip(target.parameters(), source.parameters()):
+            target_param.data.copy_(source_param.data)
 
 class OUNoise:
     """Ornstein-Uhlenbeck process."""
