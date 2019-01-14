@@ -32,7 +32,6 @@ To run the main program you have to create a configuration file called `*.ini` w
 
 Configuration files has two important field, `PARAMS` where you configure all the parameters and `FILES` where you have to set the path to the Unity application game. Here is an example of a configuration file in Linux,
 
-    ```
     [PARAMS]
     # max. number of episode to train the agent
     n_episodes:      2000
@@ -71,13 +70,12 @@ Configuration files has two important field, `PARAMS` where you configure all th
     [FILES]
     # executable Tenis game. Add path and file
     game_file:       Tennis_Linux/Tennis.x86_64
-    ```
 
 ### How to run the code
 
-1. Create a config file. One way could be cp params_example.ini params.ini and then modify the parameters as you want
+1. Create a config file. One way could be `cp params_example.ini params.ini` and then modify the parameters as you want
 
-1. Remember to activate the environment with source activate drlnavigation
+1. Remember to activate the environment with `source activate drlnavigation`
 
 1. To train a new agent:
 
@@ -85,7 +83,7 @@ Configuration files has two important field, `PARAMS` where you configure all th
     python learn_and_prove.py params.ini --train
     ```
 
-    This will produce three files under the namespace checkpoint: checkpoint.actor.pth and checkpoint.critic.pth holding the weights of the final Actor and Critic networks. The third file checkpoint.npz contains information about the configuration run and learning curves. To change the default namespace use the option --file NAMESPACE.
+    This will produce three files under the namespace checkpoint: `checkpoint.actor.pth` and `checkpoint.critic.pth` holding the weights of the final Actor and Critic networks. The third file `checkpoint.npz` contains information about the configuration run and learning curves. To change the default namespace use the option `--file NAMESPACE`.
 
 1. To watch again the performance of the agent trained in the last step run again:
 
